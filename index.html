@@ -330,8 +330,8 @@
   <section class="narrative">
     <p>
       On December 1st, 2025, the GDM mech interp team published a LessWrong article
-      declaring that they were pivoting to a pragmatic approach to interpretability.
-      Much time had been lost chasing numbers in SAE reconstruction loss — they argued
+      declaring that they were pivoting to a pragmatic approach to interpretability [5].
+      Much time had been lost chasing numbers in SAE reconstruction loss; they argued
       that optimizing such proxies did not get them closer to their north star: making
       AI go well through understanding how deep neural networks process information at
       a mechanistic level. Has the AI control agenda gone the way of mech interp? Is
@@ -342,7 +342,7 @@
       The parallel I want to draw is this: in mech interp, SAE reconstruction loss
       turned out to be a number you could optimize without getting closer to
       understanding models. My worry is that Pareto safety–usefulness frontiers are
-      becoming the same kind of number for control — optimizable, publishable, and
+      becoming the same kind of number for control: optimizable, publishable, and
       only loosely coupled to how fast we can catch a scheming model in production.
     </p>
 
@@ -360,7 +360,7 @@
 
     <p class="section-heading">The proxy trap</p>
     <p>
-      I recently worked on a project in AI control — we devoted three months to
+      I recently worked on a project in AI control, where we devoted three months to
       optimizing a trade-off between safety and usefulness by stacking defensive
       protocols. After reading an article on AI-assisted red-teaming, it was clear to
       me that if we wanted an accurate Pareto frontier, we needed to do something
@@ -373,14 +373,14 @@
     <p class="section-heading">The detection-to-pull gap</p>
     <p>
       And even when control works as intended post-deployment, detection is only the
-      start: between the time a model is flagged and the time it is actually pulled,
+      start. Between the time a model is flagged and the time it is actually pulled,
       there are weeks of discovery, escalation, and legal review during which a
       frontier model keeps acting on the world. The damage accumulated in that window
       is the thing we should be trying to shrink.
     </p>
     <p>
       This damage would certainly be larger without AI control. However, the proxy
-      task of optimizing Pareto frontiers is far removed from what actually matters —
+      task of optimizing Pareto frontiers is far removed from what actually matters,
       and, like SAE reconstruction loss before it, risks becoming a number we optimize
       precisely because it's easier than measuring the thing we care about: minimizing
       the time window a bad model has before detection. The sooner we intervene, the
@@ -395,7 +395,7 @@
       control should find points of intervention throughout the model lifecycle,
       hopefully preventing incidents like this before deployment. That way, AI control
       could provide more benefit today, and be more resistant to going the way of the
-      ambitious mech interp era — where every paper was about SAEs and reconstruction
+      ambitious mech interp era, where every paper was about SAEs and reconstruction
       loss.
     </p>
   </section>
@@ -573,11 +573,12 @@
       [3] Greenblatt, Shlegeris, Sachan &amp; Roger (2023), <em>AI Control: Improving Safety Despite Intentional Subversion</em>,
       <a href="https://arxiv.org/abs/2312.06942">arXiv:2312.06942</a>.<br>
       [4] Wang, Xu, An, Dai, Gao et al. (2025), <em>Let It Flow: Building the ROME Model within an Open Agentic Learning Ecosystem</em>,
-      <a href="https://arxiv.org/abs/2512.24873">arXiv:2512.24873</a>.
+      <a href="https://arxiv.org/abs/2512.24873">arXiv:2512.24873</a>.<br>
+      [5] Nanda et al. (2025), <em>A Pragmatic Vision for Interpretability</em>,
+      <a href="https://www.lesswrong.com/posts/StENzDcD3kpfGJssR/a-pragmatic-vision-for-interpretability">LessWrong</a>.
     </div>
     <div class="footnote-block" style="margin-top: 1.5rem; opacity: 0.7;">
-      Companion scenario to "The Fading North Star of AI Control." Inspired by Nanda et al. (2025),
-      <em>A Pragmatic Vision for Interpretability</em>.
+      Companion scenario to "The Fading North Star of AI Control." Inspired by [5].
     </div>
   </footer>
 </div>

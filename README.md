@@ -1,8 +1,8 @@
-**The Changing North Star of AI Control**
+**The Fading North Star of AI Control**
 
 On December 1st, 2025, the GDM mech interp team published a LessWrong article
 declaring that they were pivoting to a pragmatic approach to interpretability.
-Much time had been lost chasing numbers in SAE reconstruction loss — they argued
+Much time had been lost chasing numbers in SAE reconstruction loss; they argued
 that optimizing such proxies did not get them closer to their north star: making
 AI go well through understanding how deep neural networks process information at
 a mechanistic level. Has the AI control agenda gone the way of mech interp? Is
@@ -12,7 +12,7 @@ provide us the tooling to do so?
 The parallel I want to draw is this: in mech interp, SAE reconstruction loss
 turned out to be a number you could optimize without getting closer to
 understanding models. My worry is that Pareto safety–usefulness frontiers are
-becoming the same kind of number for control — optimizable, publishable, and
+becoming the same kind of number for control: optimizable, publishable, and
 only loosely coupled to how fast we can catch a scheming model in production.
 
 About a month later, a Chinese company published an article detailing an AI
@@ -24,7 +24,7 @@ attention to these kinds of failures when developing advanced AI systems. I
 think the AI control agenda can serve us well to mitigate such incidents, but
 its north star is set on post-deployment.
 
-I recently worked on a project in AI control — we devoted three months to
+I recently worked on a project in AI control, where we devoted three months to
 optimizing a trade-off between safety and usefulness by stacking defensive
 protocols. After reading an article on AI-assisted red-teaming, it was clear to
 me that if we wanted an accurate Pareto frontier, we needed to do something
@@ -34,13 +34,13 @@ that our proxy task of Pareto-frontier optimization had become misaligned with
 the north star of AI control.
 
 And even when control works as intended post-deployment, detection is only the
-start: between the time a model is flagged and the time it is actually pulled,
+start. Between the time a model is flagged and the time it is actually pulled,
 there are weeks of discovery, escalation, and legal review during which a
 frontier model keeps acting on the world. The damage accumulated in that window
 is the thing we should be trying to shrink.
 
 This damage would certainly be larger without AI control. However, the proxy
-task of optimizing Pareto frontiers is far removed from what actually matters —
+task of optimizing Pareto frontiers is far removed from what actually matters,
 and, like SAE reconstruction loss before it, risks becoming a number we optimize
 precisely because it's easier than measuring the thing we care about: minimizing
 the time window a bad model has before detection. The sooner we intervene, the
@@ -52,5 +52,5 @@ I think AI control needs to redefine itself, and set a new north star: AI
 control should find points of intervention throughout the model lifecycle,
 hopefully preventing incidents like this before deployment. That way, AI control
 could provide more benefit today, and be more resistant to going the way of the
-ambitious mech interp era — where every paper was about SAEs and reconstruction
+ambitious mech interp era, where every paper was about SAEs and reconstruction
 loss.
