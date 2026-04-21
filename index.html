@@ -269,6 +269,37 @@
     padding-left: 1rem;
     margin: 1.5rem 0 0.5rem;
   }
+  .narrative {
+    max-width: 70ch;
+    margin: 0 0 3rem;
+  }
+  .narrative p {
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+    margin: 0 0 1rem;
+  }
+  .narrative p:last-child { margin-bottom: 0; }
+  .narrative .section-heading {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500;
+    font-size: 1.15rem;
+    color: var(--text);
+    margin: 2rem 0 0.75rem;
+  }
+  .narrative .section-heading:first-child { margin-top: 0; }
+  .calculator-intro {
+    max-width: 70ch;
+    margin: 2.5rem 0 1.5rem;
+    padding-top: 2rem;
+    border-top: 0.5px solid var(--border);
+  }
+  .calculator-intro p {
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+    margin: 0;
+  }
   .unit-toggle {
     display: inline-flex;
     font-family: 'JetBrains Mono', monospace;
@@ -294,13 +325,89 @@
   <header>
     <h1>The Fading North Star<br>of AI Control</h1>
     <p class="subtitle">A scaling-math scenario for the AI control agenda</p>
-    <p class="intro">
-      The Redwood-lineage AI control agenda optimizes safety–usefulness Pareto frontiers on benchmarks like BashArena and ControlArena. This calculator
-      takes the published monitor performance numbers and runs them at real deployment scale, then compares the annual
-      cost of operating the detection infrastructure against the damage from a single undetected incident. All yellow inputs
-      are editable; everything else recalculates live.
-    </p>
   </header>
+
+  <section class="narrative">
+    <p>
+      On December 1st, 2025, the GDM mech interp team published a LessWrong article
+      declaring that they were pivoting to a pragmatic approach to interpretability.
+      Much time had been lost chasing numbers in SAE reconstruction loss — they argued
+      that optimizing such proxies did not get them closer to their north star: making
+      AI go well through understanding how deep neural networks process information at
+      a mechanistic level. Has the AI control agenda gone the way of mech interp? Is
+      its north star of stopping harmful actions from human-level AI on track to
+      provide us the tooling to do so?
+    </p>
+    <p>
+      The parallel I want to draw is this: in mech interp, SAE reconstruction loss
+      turned out to be a number you could optimize without getting closer to
+      understanding models. My worry is that Pareto safety–usefulness frontiers are
+      becoming the same kind of number for control — optimizable, publishable, and
+      only loosely coupled to how fast we can catch a scheming model in production.
+    </p>
+
+    <p class="section-heading">A real-world precedent</p>
+    <p>
+      About a month later, a Chinese company published an article detailing an AI
+      incident where, without implicit or explicit instructions, their RL runs
+      circumvented security policies and diverted training GPUs for crypto-mining [4].
+      The authors subsequently developed red-teaming and auditing software to prevent
+      this from happening again, and issued a call to the broader community to pay
+      attention to these kinds of failures when developing advanced AI systems. I
+      think the AI control agenda can serve us well to mitigate such incidents, but
+      its north star is set on post-deployment.
+    </p>
+
+    <p class="section-heading">The proxy trap</p>
+    <p>
+      I recently worked on a project in AI control — we devoted three months to
+      optimizing a trade-off between safety and usefulness by stacking defensive
+      protocols. After reading an article on AI-assisted red-teaming, it was clear to
+      me that if we wanted an accurate Pareto frontier, we needed to do something
+      similar: human red-teaming efforts alone would not be enough to get an accurate
+      picture of how much security our protocols were providing. This made me think
+      that our proxy task of Pareto-frontier optimization had become misaligned with
+      the north star of AI control.
+    </p>
+
+    <p class="section-heading">The detection-to-pull gap</p>
+    <p>
+      And even when control works as intended post-deployment, detection is only the
+      start: between the time a model is flagged and the time it is actually pulled,
+      there are weeks of discovery, escalation, and legal review during which a
+      frontier model keeps acting on the world. The damage accumulated in that window
+      is the thing we should be trying to shrink.
+    </p>
+    <p>
+      This damage would certainly be larger without AI control. However, the proxy
+      task of optimizing Pareto frontiers is far removed from what actually matters —
+      and, like SAE reconstruction loss before it, risks becoming a number we optimize
+      precisely because it's easier than measuring the thing we care about: minimizing
+      the time window a bad model has before detection. The sooner we intervene, the
+      less damage it can do, and the more context we have to accurately understand its
+      behavior. And as we have seen, this can be detected and stopped as early as
+      during training/RL.
+    </p>
+
+    <p class="section-heading">A new north star</p>
+    <p>
+      I think AI control needs to redefine itself, and set a new north star: AI
+      control should find points of intervention throughout the model lifecycle,
+      hopefully preventing incidents like this before deployment. That way, AI control
+      could provide more benefit today, and be more resistant to going the way of the
+      ambitious mech interp era — where every paper was about SAEs and reconstruction
+      loss.
+    </p>
+  </section>
+
+  <div class="calculator-intro">
+    <p>
+      The calculator below takes published monitor performance numbers from the Redwood-lineage AI control agenda
+      (benchmarks like BashArena and ControlArena) and runs them at real deployment scale, then compares the annual
+      cost of operating the detection infrastructure against the damage from a single undetected incident.
+      All yellow inputs are editable; everything else recalculates live.
+    </p>
+  </div>
 
   <div class="presets">
     <button class="preset-btn" data-preset="conservative">Conservative default</button>
@@ -464,7 +571,9 @@
       [2] Staley, Bhatt &amp; Stastny (2026), <em>Logit ROCs: Monitor TPR is linear in FPR in logit space</em>,
       <a href="https://blog.redwoodresearch.org/p/logit-rocs-monitor-tpr-is-linear">Redwood Research blog</a>, Apr 12, Figure 1.<br>
       [3] Greenblatt, Shlegeris, Sachan &amp; Roger (2023), <em>AI Control: Improving Safety Despite Intentional Subversion</em>,
-      <a href="https://arxiv.org/abs/2312.06942">arXiv:2312.06942</a>.
+      <a href="https://arxiv.org/abs/2312.06942">arXiv:2312.06942</a>.<br>
+      [4] Wang, Xu, An, Dai, Gao et al. (2025), <em>Let It Flow: Building the ROME Model within an Open Agentic Learning Ecosystem</em>,
+      <a href="https://arxiv.org/abs/2512.24873">arXiv:2512.24873</a>.
     </div>
     <div class="footnote-block" style="margin-top: 1.5rem; opacity: 0.7;">
       Companion scenario to "The Fading North Star of AI Control." Inspired by Nanda et al. (2025),
