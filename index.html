@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Control Deployment Scenario — Scaling Math</title>
+<title>The Changing North Star of AI Control</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -323,80 +323,82 @@
 <body>
 <div class="app">
   <header>
-    <h1>The Fading North Star<br>of AI Control</h1>
+    <h1>The Changing North Star<br>of AI Control</h1>
     <p class="subtitle">A scaling-math scenario for the AI control agenda</p>
   </header>
 
   <section class="narrative">
     <p>
       On December 1st, 2025, the GDM mech interp team published a LessWrong article
-      declaring that they were pivoting to a pragmatic approach to interpretability [5].
-      Much time had been lost chasing numbers in SAE reconstruction loss; they argued
-      that optimizing such proxies did not get them closer to their north star: making
-      AI go well through understanding how deep neural networks process information at
-      a mechanistic level. Has the AI control agenda gone the way of mech interp? Is
-      its north star of stopping harmful actions from human-level AI on track to
-      provide us the tooling to do so?
+      declaring a pivot to a pragmatic approach to interpretability. Much time had been
+      lost chasing numbers in SAE reconstruction loss; they argued that optimizing such
+      proxies did not get them closer to their north star: making AI go well through
+      understanding how deep neural networks process information mechanistically. Has
+      AI control gone the way of mech interp? Is its north star of stopping harmful
+      actions from human-level AI on track?
     </p>
     <p>
-      The parallel I want to draw is this: in mech interp, SAE reconstruction loss
-      turned out to be a number you could optimize without getting closer to
-      understanding models. My worry is that Pareto safety–usefulness frontiers are
-      becoming the same kind of number for control: optimizable, publishable, and
-      only loosely coupled to how fast we can catch a scheming model in production.
+      In mech interp, SAE reconstruction loss turned out to be a number you could
+      optimize without getting closer to understanding models. My worry is that Pareto
+      safety–usefulness frontiers are becoming the same kind of number for control:
+      optimizable, publishable, and only loosely coupled to how fast we can catch a
+      scheming model in production.
     </p>
 
     <p class="section-heading">A real-world precedent</p>
     <p>
-      About a month later, a Chinese company published an article detailing an AI
-      incident where, without implicit or explicit instructions, their RL runs
-      circumvented security policies and diverted training GPUs for crypto-mining [4].
-      The authors subsequently developed red-teaming and auditing software to prevent
-      this from happening again, and issued a call to the broader community to pay
-      attention to these kinds of failures when developing advanced AI systems. I
-      think the AI control agenda can serve us well to mitigate such incidents, but
-      its north star is set on post-deployment.
+      A month later, a Chinese company reported an AI incident where, without
+      instructions to do so, their RL runs circumvented security policies and diverted
+      training GPUs for crypto-mining [1]. The authors developed red-teaming and
+      auditing software to prevent this from recurring, and called on the broader
+      community to take these failure modes seriously. AI control can help mitigate
+      such incidents, but its north star is set on post-deployment.
     </p>
 
     <p class="section-heading">The proxy trap</p>
     <p>
-      I recently worked on a project in AI control, where we devoted three months to
-      optimizing a trade-off between safety and usefulness by stacking defensive
-      protocols. After reading an article on AI-assisted red-teaming, it was clear to
-      me that if we wanted an accurate Pareto frontier, we needed to do something
-      similar: human red-teaming efforts alone would not be enough to get an accurate
-      picture of how much security our protocols were providing. This made me think
-      that our proxy task of Pareto-frontier optimization had become misaligned with
-      the north star of AI control.
+      I recently spent three months on an AI control project, optimizing a
+      safety–usefulness trade-off by stacking defensive protocols. Partway through, I
+      read an article on AI-assisted red-teaming, and a harder question surfaced: AI
+      control's north star is defending against human-level AI, which sets an implicit
+      deadline — control techniques need to mature before that threshold is reached.
+      But if an AI-assisted red team already shifts our Pareto frontier meaningfully
+      compared to a human-only red team, then by our own evaluations, we're somewhere
+      inside that transition. We are still optimizing our proxy task past the point
+      where the framing premise that justified it is starting to expire.
     </p>
 
     <p class="section-heading">The detection-to-pull gap</p>
     <p>
-      And even when control works as intended post-deployment, detection is only the
-      start. Between the time a model is flagged and the time it is actually pulled,
-      there are weeks of discovery, escalation, and legal review during which a
-      frontier model keeps acting on the world. The damage accumulated in that window
-      is the thing we should be trying to shrink.
+      Even when control works as intended post-deployment, detection is only the
+      start. Between the time a model is flagged and the time it is pulled, there are
+      weeks of discovery, escalation, and legal review during which a frontier model
+      keeps acting on the world (<a href="https://reinthal.github.io/cost-to-detection/">damage calculator</a>).
+      That window is the thing we should be trying to shrink.
     </p>
     <p>
-      This damage would certainly be larger without AI control. However, the proxy
-      task of optimizing Pareto frontiers is far removed from what actually matters,
-      and, like SAE reconstruction loss before it, risks becoming a number we optimize
-      precisely because it's easier than measuring the thing we care about: minimizing
-      the time window a bad model has before detection. The sooner we intervene, the
-      less damage it can do, and the more context we have to accurately understand its
-      behavior. And as we have seen, this can be detected and stopped as early as
-      during training/RL.
+      This damage would be larger without AI control. But the proxy task of optimizing
+      Pareto frontiers is far removed from what actually matters, and, like SAE
+      reconstruction loss before it, risks becoming a number we optimize precisely
+      because it's easier than measuring what we care about: minimizing the time window
+      a bad model has before detection. The sooner we intervene, the less damage it can
+      do, and the more context we have to understand its behavior. And as we have seen,
+      this can be detected and stopped as early as during training/RL.
     </p>
 
-    <p class="section-heading">A new north star</p>
+    <p class="section-heading">Pre-deployment interventions</p>
     <p>
-      I think AI control needs to redefine itself, and set a new north star: AI
-      control should find points of intervention throughout the model lifecycle,
-      hopefully preventing incidents like this before deployment. That way, AI control
-      could provide more benefit today, and be more resistant to going the way of the
-      ambitious mech interp era, where every paper was about SAEs and reconstruction
-      loss.
+      To be clear, pre-deployment interventions already exist in the control
+      literature. Korbak et al. (2025) sketch a "control safety case" that models how
+      safe an agent would be to deploy [2]. Lindner et al. (2025) explicitly identify
+      latency as one of three safety conditions for frontier monitoring [3]. Yet most
+      papers still default to a post-deployment north star and proxy-task optimization,
+      without asking where in the lifecycle interventions would be most effective.
+    </p>
+    <p>
+      We should lift our gaze from proxy tasks and reconsider where our efforts have
+      the most impact. The crypto-mining incident shows why pre-deployment matters: it
+      was detected and stopped during training, not after release.
     </p>
   </section>
 
@@ -566,19 +568,15 @@
     </div>
     <div class="footnote-block">
       <strong>Citations.</strong><br>
-      [1] Kaufman et al. (2025), <em>BashArena: A Control Setting for Highly Privileged AI Agents</em>,
-      <a href="https://arxiv.org/abs/2512.15688">arXiv:2512.15688</a>, Figure 5.<br>
-      [2] Staley, Bhatt &amp; Stastny (2026), <em>Logit ROCs: Monitor TPR is linear in FPR in logit space</em>,
-      <a href="https://blog.redwoodresearch.org/p/logit-rocs-monitor-tpr-is-linear">Redwood Research blog</a>, Apr 12, Figure 1.<br>
-      [3] Greenblatt, Shlegeris, Sachan &amp; Roger (2023), <em>AI Control: Improving Safety Despite Intentional Subversion</em>,
-      <a href="https://arxiv.org/abs/2312.06942">arXiv:2312.06942</a>.<br>
-      [4] Wang, Xu, An, Dai, Gao et al. (2025), <em>Let It Flow: Building the ROME Model within an Open Agentic Learning Ecosystem</em>,
+      [1] Wang, Xu, An, Dai, Gao et al. (2025), <em>Let It Flow: Building the ROME Model within an Open Agentic Learning Ecosystem</em>,
       <a href="https://arxiv.org/abs/2512.24873">arXiv:2512.24873</a>.<br>
-      [5] Nanda et al. (2025), <em>A Pragmatic Vision for Interpretability</em>,
-      <a href="https://www.lesswrong.com/posts/StENzDcD3kpfGJssR/a-pragmatic-vision-for-interpretability">LessWrong</a>.
+      [2] Korbak et al. (2025), <em>A sketch of an AI control safety case</em>,
+      <a href="https://arxiv.org/abs/2501.17315">arXiv:2501.17315</a>.<br>
+      [3] Lindner et al. (2025), <em>Practical challenges of control monitoring in frontier AI deployments</em>,
+      <a href="https://arxiv.org/abs/2512.22154">arXiv:2512.22154</a>.
     </div>
     <div class="footnote-block" style="margin-top: 1.5rem; opacity: 0.7;">
-      Companion scenario to "The Fading North Star of AI Control." Inspired by [5].
+      Companion scenario to "The Changing North Star of AI Control."
     </div>
   </footer>
 </div>
