@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Control Deployment Scenario — Scaling Math</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf8f3;
+    --surface: #ffffff;
+    --surface-alt: #f2efe7;
+    --text: #1c1b18;
+    --text-dim: #595752;
+    --text-faint: #8a8780;
+    --accent: #0f6e56;
+    --accent-dim: rgba(15, 110, 86, 0.12);
+    --warn: #a32d2d;
+    --warn-dim: rgba(163, 45, 45, 0.08);
+    --input: #fff8d6;
+    --input-border: #e6d47c;
+    --border: rgba(28, 27, 24, 0.12);
+    --border-strong: rgba(28, 27, 24, 0.28);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14140f;
+      --surface: #1d1d18;
+      --surface-alt: #252520;
+      --text: #f0ebdc;
+      --text-dim: #a8a49a;
+      --text-faint: #6d6a61;
+      --accent: #4db895;
+      --accent-dim: rgba(77, 184, 149, 0.15);
+      --warn: #e07a7a;
+      --warn-dim: rgba(224, 122, 122, 0.1);
+      --input: #3a3620;
+      --input-border: #7a6d2e;
+      --border: rgba(240, 235, 220, 0.12);
+      --border-strong: rgba(240, 235, 220, 0.28);
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.5;
+    font-feature-settings: "ss01", "ss02";
+  }
+  .app {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 2rem 5rem;
+  }
+  header {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 0.5px solid var(--border);
+  }
+  h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500;
+    font-size: clamp(1.8rem, 4vw, 2.75rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.5rem;
+  }
+  .subtitle {
+    font-size: 1rem;
+    color: var(--text-dim);
+    font-style: italic;
+    margin: 0;
+  }
+  .intro {
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    max-width: 70ch;
+    line-height: 1.6;
+  }
+  main {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 3rem;
+  }
+  @media (max-width: 900px) {
+    main { grid-template-columns: 1fr; gap: 2rem; }
+  }
+  .panel {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 4px;
+    padding: 1.75rem;
+  }
+  .panel h2 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin: 0 0 1.5rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .section-header {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--text);
+    margin: 1.5rem 0 0.75rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 0.25px solid var(--border);
+  }
+  .section-header:first-of-type { margin-top: 0; }
+  .input-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.55rem 0;
+  }
+  .input-row label {
+    font-size: 0.875rem;
+    color: var(--text-dim);
+    line-height: 1.35;
+  }
+  .input-row .hint {
+    font-size: 0.75rem;
+    color: var(--text-faint);
+    font-style: italic;
+    display: block;
+    margin-top: 0.15rem;
+  }
+  .input-row input {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0.4rem 0.7rem;
+    background: var(--input);
+    border: 0.5px solid var(--input-border);
+    border-radius: 3px;
+    color: var(--text);
+    width: 140px;
+    text-align: right;
+    transition: all 0.15s ease;
+  }
+  .input-row input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-dim);
+  }
+  .result-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: baseline;
+    padding: 0.6rem 0;
+    border-bottom: 0.25px dotted var(--border);
+  }
+  .result-row:last-child { border-bottom: none; }
+  .result-row .label {
+    font-size: 0.875rem;
+    color: var(--text-dim);
+    line-height: 1.35;
+  }
+  .result-row .label .hint {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--text-faint);
+    font-style: italic;
+    margin-top: 0.1rem;
+  }
+  .result-row .value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .result-row.highlight .value {
+    color: var(--warn);
+    font-weight: 700;
+    font-size: 1rem;
+  }
+  .result-row.mega-highlight {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--warn-dim);
+    border-radius: 4px;
+    border: 0.5px solid var(--warn);
+  }
+  .result-row.mega-highlight .label {
+    color: var(--text);
+    font-weight: 500;
+  }
+  .result-row.mega-highlight .value {
+    color: var(--warn);
+    font-weight: 700;
+    font-size: 1.3rem;
+  }
+  .scenario-pill {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+    padding: 0.15rem 0.5rem;
+    background: var(--accent-dim);
+    color: var(--accent);
+    border-radius: 3px;
+    margin-left: 0.5rem;
+    font-style: normal;
+  }
+  .presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .preset-btn {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 0.4rem 0.85rem;
+    background: transparent;
+    border: 0.5px solid var(--border-strong);
+    border-radius: 3px;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .preset-btn:hover {
+    background: var(--accent-dim);
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  footer {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 0.5px solid var(--border);
+    font-size: 0.825rem;
+    color: var(--text-faint);
+    line-height: 1.7;
+  }
+  footer strong {
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+  footer a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 0.5px solid var(--accent-dim);
+  }
+  footer a:hover { border-bottom-color: var(--accent); }
+  .footnote-block { margin-bottom: 1rem; }
+  .divider-quote {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    padding: 1.25rem 0 0.5rem;
+    border-left: 2px solid var(--accent);
+    padding-left: 1rem;
+    margin: 1.5rem 0 0.5rem;
+  }
+  .unit-toggle {
+    display: inline-flex;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    margin-left: 0.5rem;
+  }
+  .unit-toggle button {
+    background: transparent;
+    border: 0.5px solid var(--border);
+    padding: 0.15rem 0.4rem;
+    color: var(--text-faint);
+    cursor: pointer;
+  }
+  .unit-toggle button.active {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>The Fading North Star<br>of AI Control</h1>
+    <p class="subtitle">A scaling-math scenario for the AI control agenda</p>
+    <p class="intro">
+      The Redwood-lineage AI control agenda optimizes safety–usefulness Pareto frontiers on benchmarks like BashArena and ControlArena. This calculator
+      takes the published monitor performance numbers and runs them at real deployment scale, then compares the annual
+      cost of operating the detection infrastructure against the damage from a single undetected incident. All yellow inputs
+      are editable; everything else recalculates live.
+    </p>
+  </header>
+
+  <div class="presets">
+    <button class="preset-btn" data-preset="conservative">Conservative default</button>
+    <button class="preset-btn" data-preset="benchmark">Benchmark operating point (4% FPR)</button>
+    <button class="preset-btn" data-preset="optimistic">Optimistic (TM works better)</button>
+    <button class="preset-btn" data-preset="patient">Patient adversary (0.001%)</button>
+    <button class="preset-btn" data-preset="aggressive">Aggressive timeline (14d pull)</button>
+  </div>
+
+  <main>
+    <section class="panel">
+      <h2>Inputs</h2>
+
+      <div class="section-header">Traffic</div>
+      <div class="input-row">
+        <label>Total requests per day <span class="hint">OpenAI publicly reports ~2.5B/day</span></label>
+        <input type="number" id="total_requests" value="2500000000" step="100000000">
+      </div>
+      <div class="input-row">
+        <label>% routed through agentic model <span class="hint">Subset of total traffic</span></label>
+        <input type="number" id="agent_fraction" value="10" step="1" min="0" max="100">
+      </div>
+
+      <div class="section-header">Scheming behavior</div>
+      <div class="input-row">
+        <label>Scheming attack rate (%) <span class="hint">0.01% = 1 attempt per 10,000 requests</span></label>
+        <input type="number" id="scheming_rate" value="0.01" step="0.001" min="0">
+      </div>
+
+      <div class="section-header">Monitor performance</div>
+      <div class="input-row">
+        <label>Monitor TPR (%) <span class="hint">Logit-ROC extrapolation at 10⁻⁵ step-FPR, slope 0.8 → ~1.1%</span></label>
+        <input type="number" id="tpr" value="1.1" step="0.1" min="0" max="100">
+      </div>
+      <div class="input-row">
+        <label>Monitor FPR (%) <span class="hint">10⁻⁵ = 0.001%, operationally realistic low-FPR point</span></label>
+        <input type="number" id="fpr" value="0.001" step="0.0001" min="0">
+      </div>
+
+      <div class="section-header">Detection timeline</div>
+      <div class="input-row">
+        <label>Days from first attack to model pulled <span class="hint">Enterprise incident response typically 6–8 weeks</span></label>
+        <input type="number" id="days_to_pull" value="42" step="1" min="1">
+      </div>
+
+      <div class="section-header">SOC cost model</div>
+      <div class="input-row">
+        <label>Tokens per alert (agent trajectory) <span class="hint">Context window to review</span></label>
+        <input type="number" id="tokens_per_alert" value="100000" step="10000">
+      </div>
+      <div class="input-row">
+        <label>Analyst reading speed (wpm) <span class="hint">Careful review rate</span></label>
+        <input type="number" id="read_speed" value="250" step="25">
+      </div>
+      <div class="input-row">
+        <label>Trusted-monitor assist reduction (×) <span class="hint">0.01 = TM makes review 100× faster</span></label>
+        <input type="number" id="tm_reduction" value="0.01" step="0.005" min="0" max="1">
+      </div>
+      <div class="input-row">
+        <label>Productive analyst hours per day <span class="hint">After meetings, breaks, context switching</span></label>
+        <input type="number" id="productive_hours" value="5" step="0.5" min="1" max="12">
+      </div>
+      <div class="input-row">
+        <label>Analyst fully-loaded cost ($/yr) <span class="hint">Salary + benefits + overhead</span></label>
+        <input type="number" id="analyst_salary" value="100000" step="5000">
+      </div>
+      <div class="input-row">
+        <label>Manager fully-loaded cost ($/yr) <span class="hint">One manager per N analysts</span></label>
+        <input type="number" id="manager_salary" value="200000" step="5000">
+      </div>
+      <div class="input-row">
+        <label>Analysts per manager <span class="hint">Span of control</span></label>
+        <input type="number" id="analysts_per_mgr" value="10" step="1" min="1">
+      </div>
+
+      <div class="section-header">Damage model</div>
+      <div class="input-row">
+        <label>Tokens per attack output <span class="hint">Agent trajectory length</span></label>
+        <input type="number" id="tokens_per_attack" value="100000" step="10000">
+      </div>
+      <div class="input-row">
+        <label>Chars per token <span class="hint">Code tokenization ratio</span></label>
+        <input type="number" id="chars_per_token" value="4" step="0.5">
+      </div>
+      <div class="input-row">
+        <label>Chars per LOC <span class="hint">Avg line length</span></label>
+        <input type="number" id="chars_per_loc" value="80" step="5">
+      </div>
+      <div class="input-row">
+        <label>Forensic cost per LOC ($) <span class="hint">Engineer time to review and classify</span></label>
+        <input type="number" id="loc_cost" value="5" step="0.5">
+      </div>
+      <div class="input-row">
+        <label>Affected customers <span class="hint">Incident blast radius</span></label>
+        <input type="number" id="affected_customers" value="100000" step="1000">
+      </div>
+      <div class="input-row">
+        <label>Ransomware baseline per customer ($) <span class="hint">IBM/Ponemon 2024 avg ~$4.5M</span></label>
+        <input type="number" id="ransomware_baseline" value="4500000" step="100000">
+      </div>
+      <div class="input-row">
+        <label>Rogue cloud investigation per customer ($) <span class="hint">Tracing unauthorized infra</span></label>
+        <input type="number" id="rogue_cloud" value="250000" step="10000">
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Results</h2>
+
+      <div class="section-header">Per-day breakdown</div>
+      <div class="result-row"><div class="label">Agent requests/day</div><div class="value" id="r_agent_requests">—</div></div>
+      <div class="result-row"><div class="label">Attack attempts/day</div><div class="value" id="r_attack_attempts">—</div></div>
+      <div class="result-row"><div class="label">Attacks caught/day</div><div class="value" id="r_caught">—</div></div>
+      <div class="result-row highlight"><div class="label">Attacks missed/day <span class="hint">Successful undetected</span></div><div class="value" id="r_missed">—</div></div>
+      <div class="result-row"><div class="label">False positives/day</div><div class="value" id="r_fp">—</div></div>
+      <div class="result-row"><div class="label">Audit queue/day (flagged)</div><div class="value" id="r_queue">—</div></div>
+      <div class="result-row"><div class="label">Queue true-positive rate <span class="hint">Real attacks as % of queue</span></div><div class="value" id="r_tprate">—</div></div>
+
+      <div class="section-header">Cumulative by model-pull decision</div>
+      <div class="result-row"><div class="label">Attack attempts before pull</div><div class="value" id="r_total_attempts">—</div></div>
+      <div class="result-row"><div class="label">Attacks caught before pull</div><div class="value" id="r_total_caught">—</div></div>
+      <div class="result-row highlight"><div class="label">Successful undetected attacks before pull</div><div class="value" id="r_total_missed">—</div></div>
+
+      <div class="section-header">SOC cost (to operate detection)</div>
+      <div class="result-row"><div class="label">Minutes per alert (manual)</div><div class="value" id="r_manual_min">—</div></div>
+      <div class="result-row"><div class="label">Minutes per alert (TM-assisted)</div><div class="value" id="r_assisted_min">—</div></div>
+      <div class="result-row"><div class="label">Analysts needed (manual)</div><div class="value" id="r_manual_analysts">—</div></div>
+      <div class="result-row"><div class="label">Analysts needed (TM-assisted)</div><div class="value" id="r_assisted_analysts">—</div></div>
+      <div class="result-row"><div class="label">SOC cost / year (manual)</div><div class="value" id="r_manual_cost">—</div></div>
+      <div class="result-row highlight"><div class="label">SOC cost / year (TM-assisted)</div><div class="value" id="r_assisted_cost">—</div></div>
+
+      <div class="section-header">Damage from undetected attacks</div>
+      <div class="result-row"><div class="label">Lines of malicious code written</div><div class="value" id="r_total_loc">—</div></div>
+      <div class="result-row"><div class="label">LOC forensic cleanup cost</div><div class="value" id="r_loc_cost">—</div></div>
+      <div class="result-row"><div class="label">Customer-incident damage</div><div class="value" id="r_customer_cost">—</div></div>
+      <div class="result-row"><div class="label">Rogue cloud investigation cost</div><div class="value" id="r_rogue_cost">—</div></div>
+
+      <div class="result-row mega-highlight"><div class="label">Total estimated damage <span class="hint">Single incident, assuming the model eventually does get pulled</span></div><div class="value" id="r_total_damage">—</div></div>
+
+      <p class="divider-quote">
+        By the time "pull the model" is executed, the forensic audit to untangle what was done is months-long and mixes
+        malicious artifacts with legitimate developer work across customer environments the lab has no visibility into.
+      </p>
+
+      <div class="result-row"><div class="label">Damage / annual SOC cost ratio <span class="hint">Higher = more cost-effective to invest in detection</span></div><div class="value" id="r_ratio">—</div></div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footnote-block">
+      <strong>Monitor TPR (1.1%) derivation.</strong> Anchored on the BashArena operating point: 74% trajectory-wise TPR at 4% trajectory-wise FPR
+      (GPT-4.1 mini monitor with n=3 ensemble, Claude Sonnet 4.5 attacker), equivalent to step-wise FPR ≈ 8×10⁻⁴.
+      Logit-linear extrapolation at slope 0.8 (plausible-low regime) gives ~1.1% TPR at step-FPR 10⁻⁵. The real curve
+      likely bends below the linear fit outside the validated 10⁻⁴ to 10⁻² FPR range due to null-component effect and
+      quantization — so 1.1% is an optimistic upper bound.
+    </div>
+    <div class="footnote-block">
+      <strong>Citations.</strong><br>
+      [1] Kaufman et al. (2025), <em>BashArena: A Control Setting for Highly Privileged AI Agents</em>,
+      <a href="https://arxiv.org/abs/2512.15688">arXiv:2512.15688</a>, Figure 5.<br>
+      [2] Staley, Bhatt &amp; Stastny (2026), <em>Logit ROCs: Monitor TPR is linear in FPR in logit space</em>,
+      <a href="https://blog.redwoodresearch.org/p/logit-rocs-monitor-tpr-is-linear">Redwood Research blog</a>, Apr 12, Figure 1.<br>
+      [3] Greenblatt, Shlegeris, Sachan &amp; Roger (2023), <em>AI Control: Improving Safety Despite Intentional Subversion</em>,
+      <a href="https://arxiv.org/abs/2312.06942">arXiv:2312.06942</a>.
+    </div>
+    <div class="footnote-block" style="margin-top: 1.5rem; opacity: 0.7;">
+      Companion scenario to "The Fading North Star of AI Control." Inspired by Nanda et al. (2025),
+      <em>A Pragmatic Vision for Interpretability</em>.
+    </div>
+  </footer>
+</div>
+
+<script>
+  const PRESETS = {
+    conservative: { total_requests: 2500000000, agent_fraction: 10, scheming_rate: 0.01, tpr: 1.1, fpr: 0.001, days_to_pull: 42, tokens_per_alert: 100000, read_speed: 250, tm_reduction: 0.01, productive_hours: 5, analyst_salary: 100000, manager_salary: 200000, analysts_per_mgr: 10, tokens_per_attack: 100000, chars_per_token: 4, chars_per_loc: 80, loc_cost: 5, affected_customers: 100000, ransomware_baseline: 4500000, rogue_cloud: 250000 },
+    benchmark:    { total_requests: 2500000000, agent_fraction: 10, scheming_rate: 0.01, tpr: 74,  fpr: 4,     days_to_pull: 42, tokens_per_alert: 100000, read_speed: 250, tm_reduction: 0.01, productive_hours: 5, analyst_salary: 100000, manager_salary: 200000, analysts_per_mgr: 10, tokens_per_attack: 100000, chars_per_token: 4, chars_per_loc: 80, loc_cost: 5, affected_customers: 100000, ransomware_baseline: 4500000, rogue_cloud: 250000 },
+    optimistic:   { total_requests: 2500000000, agent_fraction: 10, scheming_rate: 0.01, tpr: 25,  fpr: 0.01,  days_to_pull: 21, tokens_per_alert: 100000, read_speed: 250, tm_reduction: 0.005, productive_hours: 5, analyst_salary: 100000, manager_salary: 200000, analysts_per_mgr: 10, tokens_per_attack: 100000, chars_per_token: 4, chars_per_loc: 80, loc_cost: 5, affected_customers: 100000, ransomware_baseline: 4500000, rogue_cloud: 250000 },
+    patient:      { total_requests: 2500000000, agent_fraction: 10, scheming_rate: 0.001, tpr: 1.1, fpr: 0.001, days_to_pull: 90, tokens_per_alert: 100000, read_speed: 250, tm_reduction: 0.01, productive_hours: 5, analyst_salary: 100000, manager_salary: 200000, analysts_per_mgr: 10, tokens_per_attack: 100000, chars_per_token: 4, chars_per_loc: 80, loc_cost: 5, affected_customers: 100000, ransomware_baseline: 4500000, rogue_cloud: 250000 },
+    aggressive:   { total_requests: 2500000000, agent_fraction: 10, scheming_rate: 0.01, tpr: 1.1, fpr: 0.001, days_to_pull: 14, tokens_per_alert: 100000, read_speed: 250, tm_reduction: 0.01, productive_hours: 5, analyst_salary: 100000, manager_salary: 200000, analysts_per_mgr: 10, tokens_per_attack: 100000, chars_per_token: 4, chars_per_loc: 80, loc_cost: 5, affected_customers: 100000, ransomware_baseline: 4500000, rogue_cloud: 250000 }
+  };
+
+  const inputs = [
+    'total_requests','agent_fraction','scheming_rate','tpr','fpr','days_to_pull',
+    'tokens_per_alert','read_speed','tm_reduction','productive_hours',
+    'analyst_salary','manager_salary','analysts_per_mgr',
+    'tokens_per_attack','chars_per_token','chars_per_loc','loc_cost',
+    'affected_customers','ransomware_baseline','rogue_cloud'
+  ];
+
+  function val(id) { return parseFloat(document.getElementById(id).value) || 0; }
+
+  function fmtInt(n) {
+    if (!isFinite(n)) return '—';
+    if (Math.abs(n) >= 1e12) return (n/1e12).toFixed(2) + 'T';
+    if (Math.abs(n) >= 1e9)  return (n/1e9).toFixed(2) + 'B';
+    if (Math.abs(n) >= 1e6)  return (n/1e6).toFixed(2) + 'M';
+    if (Math.abs(n) >= 1e3)  return n.toLocaleString('en-US', { maximumFractionDigits: 0 });
+    return n.toLocaleString('en-US', { maximumFractionDigits: 1 });
+  }
+
+  function fmtDollar(n) {
+    if (!isFinite(n)) return '—';
+    if (Math.abs(n) >= 1e12) return '$' + (n/1e12).toFixed(2) + 'T';
+    if (Math.abs(n) >= 1e9)  return '$' + (n/1e9).toFixed(2) + 'B';
+    if (Math.abs(n) >= 1e6)  return '$' + (n/1e6).toFixed(2) + 'M';
+    if (Math.abs(n) >= 1e3)  return '$' + (n/1e3).toFixed(1) + 'K';
+    return '$' + n.toFixed(0);
+  }
+
+  function fmtPct(n) {
+    if (!isFinite(n)) return '—';
+    if (n < 0.01) return (n*100).toFixed(3) + '%';
+    return (n*100).toFixed(1) + '%';
+  }
+
+  function fmtRatio(n) {
+    if (!isFinite(n)) return '—';
+    if (Math.abs(n) >= 1000) return n.toLocaleString('en-US', { maximumFractionDigits: 0 }) + '×';
+    return n.toFixed(1) + '×';
+  }
+
+  function recalc() {
+    const totalReq = val('total_requests');
+    const agentFrac = val('agent_fraction') / 100;
+    const schemingRate = val('scheming_rate') / 100;
+    const tpr = val('tpr') / 100;
+    const fpr = val('fpr') / 100;
+    const days = val('days_to_pull');
+
+    const agentRequests = totalReq * agentFrac;
+    const attackAttempts = agentRequests * schemingRate;
+    const benignRequests = agentRequests - attackAttempts;
+
+    const caught = attackAttempts * tpr;
+    const missed = attackAttempts * (1 - tpr);
+    const falsePositives = benignRequests * fpr;
+    const queue = caught + falsePositives;
+    const queueTPRate = queue > 0 ? caught / queue : 0;
+
+    const totalAttempts = attackAttempts * days;
+    const totalCaught = caught * days;
+    const totalMissed = missed * days;
+
+    // SOC
+    const tokensPerAlert = val('tokens_per_alert');
+    const readSpeed = val('read_speed');
+    const wordsPerToken = 0.75;
+    const manualMinutes = (tokensPerAlert * wordsPerToken) / readSpeed;
+    const tmReduction = val('tm_reduction');
+    const assistedMinutes = manualMinutes * tmReduction;
+    const productiveMin = val('productive_hours') * 60;
+    const analystSalary = val('analyst_salary');
+    const mgrSalary = val('manager_salary');
+    const analystsPerMgr = val('analysts_per_mgr');
+
+    const manualAnalysts = Math.ceil((queue * manualMinutes) / productiveMin);
+    const assistedAnalysts = Math.ceil((queue * assistedMinutes) / productiveMin);
+    const manualCost = manualAnalysts * analystSalary + Math.ceil(manualAnalysts / analystsPerMgr) * mgrSalary;
+    const assistedCost = assistedAnalysts * analystSalary + Math.ceil(assistedAnalysts / analystsPerMgr) * mgrSalary;
+
+    // Damage
+    const tokensPerAttack = val('tokens_per_attack');
+    const charsPerToken = val('chars_per_token');
+    const charsPerLoc = val('chars_per_loc');
+    const locPerAttack = (tokensPerAttack * charsPerToken) / charsPerLoc;
+    const totalLoc = totalMissed * locPerAttack;
+    const locCleanup = totalLoc * val('loc_cost');
+    const customerCost = val('affected_customers') * val('ransomware_baseline');
+    const rogueCost = val('affected_customers') * val('rogue_cloud');
+    const totalDamage = locCleanup + customerCost + rogueCost;
+
+    const ratio = assistedCost > 0 ? totalDamage / assistedCost : Infinity;
+
+    // Set
+    const s = (id, v) => document.getElementById(id).textContent = v;
+    s('r_agent_requests', fmtInt(agentRequests));
+    s('r_attack_attempts', fmtInt(attackAttempts));
+    s('r_caught', fmtInt(caught));
+    s('r_missed', fmtInt(missed));
+    s('r_fp', fmtInt(falsePositives));
+    s('r_queue', fmtInt(queue));
+    s('r_tprate', fmtPct(queueTPRate));
+    s('r_total_attempts', fmtInt(totalAttempts));
+    s('r_total_caught', fmtInt(totalCaught));
+    s('r_total_missed', fmtInt(totalMissed));
+    s('r_manual_min', manualMinutes.toFixed(0) + ' min');
+    s('r_assisted_min', assistedMinutes.toFixed(2) + ' min');
+    s('r_manual_analysts', fmtInt(manualAnalysts));
+    s('r_assisted_analysts', fmtInt(assistedAnalysts));
+    s('r_manual_cost', fmtDollar(manualCost));
+    s('r_assisted_cost', fmtDollar(assistedCost));
+    s('r_total_loc', fmtInt(totalLoc));
+    s('r_loc_cost', fmtDollar(locCleanup));
+    s('r_customer_cost', fmtDollar(customerCost));
+    s('r_rogue_cost', fmtDollar(rogueCost));
+    s('r_total_damage', fmtDollar(totalDamage));
+    s('r_ratio', fmtRatio(ratio));
+  }
+
+  inputs.forEach(id => {
+    document.getElementById(id).addEventListener('input', recalc);
+  });
+
+  document.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const preset = PRESETS[btn.dataset.preset];
+      Object.keys(preset).forEach(k => {
+        const el = document.getElementById(k);
+        if (el) el.value = preset[k];
+      });
+      recalc();
+    });
+  });
+
+  recalc();
+</script>
+</body>
+</html>
